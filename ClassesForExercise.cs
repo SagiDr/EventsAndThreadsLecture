@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,9 @@ namespace ClassesForExercise
     {
         const int MAX_CAPACITY = 1000;
         private static Random r = new Random();
+        public event Action ReachThreshold;
+        public event Action ShutDown;
+
         //Add events to the class to notify upon threshhold reached and shut down!
         #region events
         #endregion
@@ -35,8 +39,19 @@ namespace ClassesForExercise
             //Add calls to the events based on the capacity and threshhold
             #region Fire Events
             #endregion
-        }
+            if (Capacity < Threshold)
+            {
+                if(ReachThreshold != null)
+                {
+                    if (Capacity == 0 && ShutDown !=null)
+                    {
+                        ShutDown();
+                    }
 
+                    ReachThreshold();
+                }
+            }
+        }
     }
 
     class ElectricCar
@@ -53,6 +68,20 @@ namespace ClassesForExercise
             Bat = new Battery();
             #region Register to battery events
             #endregion
+            Bat.ReachThreshold += BatteryReachThresholdFunc;
+            Bat.ShutDown += BatteryShutDownFunc;
+        }
+
+        public void BatteryReachThresholdFunc()
+        {
+            Console.WriteLine($"Battery Reached the threshold! Percentage: {}");
+        }
+
+        public void BatteryShutDownFunc()
+        {
+            Console.WriteLine("Battery is about to die!");
+            this.OnCarShutDown();
+            
         }
         public void StartEngine()
         {
@@ -67,6 +96,16 @@ namespace ClassesForExercise
         //Add code to Define and implement the battery event implementations
         #region events implementation
         #endregion
+
+        public static void Progress(object sender, int precent)
+        {
+            if (sender is Battery)
+            {
+                Battery battery = (Battery)sender;
+
+            }
+
+        }
 
         public override string ToString()
         {
